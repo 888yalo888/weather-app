@@ -11,7 +11,7 @@ function GoogleMapComponent() {
     };
 
     const { isLoaded } = useJsApiLoader({
-        googleMapsApiKey: 'AIzaSyCydEBahjdGjp0dUjuigS_z86BWdHXjoeI',
+        googleMapsApiKey: import.meta.env.VITE_REACT_APP_GOOGLE_MAPS_API_KEY,
     });
 
     if (!isLoaded) {
