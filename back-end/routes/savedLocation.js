@@ -125,7 +125,7 @@ router.post(
         const { city, country, latitude, longitude } = req.body;
 
         //check if this loaction already exists
-        const exists = await SavedLocation.exists({
+        const exists = await SavedLocation.countDocuments({
             city,
             country,
             userId: req.user._id,
@@ -137,7 +137,7 @@ router.post(
             return res.status(400).end('Location already exists');
         }
 
-        const savedLocation = await SavedLocation.create({
+        const savedLocation = await SavedLocation.insertOne({
             userId: req.user._id,
             city,
             country,
@@ -165,7 +165,7 @@ router.delete('/:id', validateId(), async function (req, res) {
     //const { city, country } = req.body;
     const locationId = req.params.id;
 
-    const deleteLocation = await SavedLocation.findByIdAndDelete(locationId);
+    const deleteLocation = await SavedLocation.deleteOne(locationId);
 
     if (!deleteLocation || deleteLocation.deletedCount === 0) {
         log.warn('Location doesnt exist');

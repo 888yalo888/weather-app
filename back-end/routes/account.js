@@ -35,7 +35,7 @@ const createNewToken = async (email, isVerified, userId) => {
         }
     ); //{email: yalo@ukr.net, iat:123455, exp: 134556}
 
-    await Token.create({ token, userId, loggedin: true });
+    await Token.insertOne({ token, userId, loggedin: true });
     return token;
 };
 
@@ -51,7 +51,7 @@ router.post(
 
         const loginData = req.body; //{email:..., password:...}
 
-        const existingUser = await User.exists({
+        const existingUser = await User.countDocuments({
             // returns existing user or null
             email: loginData.email,
         });
@@ -63,7 +63,7 @@ router.post(
             return;
         }
 
-        const user = await User.create({
+        const user = await User.insertOne({
             email: loginData.email,
             passwordHash: await bcrypt.hash(loginData.password, 10),
             isVerified: false,

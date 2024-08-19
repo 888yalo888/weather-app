@@ -1,29 +1,24 @@
-const mongoose = require('mongoose');
+const { MongoClient } = require('mongodb');
 
-(async () => {
-    await mongoose.connect(process.env.DB_URL);
-})();
+const client = new MongoClient(process.env.DB_URL);
 
-const SavedLocation = mongoose.model('SavedLocation', {
-    userId: mongoose.Types.ObjectId,
-    city: String,
-    country: String,
-    longitude: Number,
-    latitude: Number,
-});
+// (async () => {
+//     try {
+//         console.log('Connecting to database at:', process.env.DB_URL);
+//         await mongoose.connect(process.env.DB_URL);
+//         console.log('Successfully connected to the database');
+//     } catch (error) {
+//         console.error('Error connecting to the database:', error);
+//     }
+// })();
 
-const User = mongoose.model('User', {
-    email: String,
-    passwordHash: String,
-    isVerified: Boolean,
-    verificationCode: String,
-});
+const database = client.db('Weather-app');
 
-const Token = mongoose.model('Token', {
-    userId: mongoose.Types.ObjectId,
-    token: String,
-    loggedin: Boolean,
-});
+const SavedLocation = database.collection('SavedLocation');
+
+const User = database.collection('User');
+
+const Token = database.collection('Token');
 
 module.exports = {
     User,
