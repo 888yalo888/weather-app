@@ -4,8 +4,7 @@ import App from './App.tsx';
 import './output.css';
 import axios from 'axios';
 
-axios.defaults.baseURL = import.meta.env.VITE_BACKEND_BASEURL;
-// axios.defaults.baseURL = 'http://localhost:3000/api';
+axios.defaults.baseURL = 'weather.olgageyfmanorlova.page/api';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
