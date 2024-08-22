@@ -23,9 +23,11 @@ router.get('/', async function (req, res) {
     //go to SavedLocation DB and fetch all the locations of the certain user
     const userSavedLocations = await SavedLocation.find({
         userId: req.user._id,
-    }); //returns an array of saved locations objects// [{}, {}]
+    }).toArray(); //returns an array of saved locations objects// [{}, {}]
 
     log.info('Fetched all saved locations');
+
+    console.log(userSavedLocations);
 
     const savedLocationsWithForecast = await Promise.all(
         userSavedLocations.map(async (item) => {

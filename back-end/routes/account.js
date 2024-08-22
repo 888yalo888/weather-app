@@ -52,9 +52,8 @@ router.post(
         const loginData = req.body; //{email:..., password:...}
 
         const existingUser = await User.countDocuments({
-            // returns existing user or null
             email: loginData.email,
-        });
+        }); // returns integer user or null
 
         if (existingUser) {
             log.warn('User with this email already exists');
@@ -63,20 +62,31 @@ router.post(
             return;
         }
 
-        const user = await User.insertOne({
+        const { insertedId: userId, acknowledged } = await User.insertOne({
             email: loginData.email,
             passwordHash: await bcrypt.hash(loginData.password, 10),
             isVerified: false,
             verificationCode: uuidv4(),
-        });
+        }); //returns an object with two keys and one of this keys is an _id of just created document {acknowledged: true/ false, insertedId: _id}
+
+        if (!acknowledged) {
+            log.warn('Mongo failed to insert a document');
+            res.status(500).end('Internal error');
+
+            return;
+        }
 
         log.info('You have successfully created an account');
+
+        const user = await User.findOne({ _id: userId });
 
         const token = await createNewToken(
             user.email,
             user.isVerified,
             user._id
         );
+
+        log.info(user);
 
         sendEmail(
             user.email,
@@ -91,7 +101,7 @@ router.post(
 router.get('/verify', async function (req, res) {
     const verificationCode = req.query.code;
 
-    const existingUser = await User.exists({
+    const existingUser = await User.findOne({
         // returns existing user or null
         verificationCode: verificationCode,
     });
@@ -104,8 +114,8 @@ router.get('/verify', async function (req, res) {
 
     const user = await User.findOneAndUpdate(
         { _id: existingUser._id },
-        { isVerified: true },
-        { new: true }
+        { $set: { isVerified: true } },
+        { returnDocument: 'after' }
     );
 
     logger.error(user);
@@ -190,7 +200,7 @@ router.delete('/logout', async function (req, res) {
                 userId: req.user._id,
                 token: req.headers.authorization.slice(7),
             },
-            { loggedin: false }
+            { $set: { loggedin: false } }
         );
         log.info('User has been successfully logged out');
         return res.end('User has been successfully logged out');

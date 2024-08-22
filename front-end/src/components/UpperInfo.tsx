@@ -17,7 +17,7 @@ function UpperInfo() {
             <div className="w-[129px] text-Label-Dark-Primary text-center font-sans-display text-[34px] leading-[41px] tracking-[.374px] mt-[-10px]">
                 {forecast!.current.city}
             </div>
-            <div className="text-xs text-[#a8aac1] font-sans-text mt-[-9px]">{`${day} , ${month} ${date}`}</div>
+            <div className="text-md text-[#a8aac1] font-sans-text mt-[-9px]">{`${day}, ${month} ${date}`}</div>
             <div className=" text-white text-center font-sans-display text-[96px] font-extralight leading-[70px] tracking-[.374px]">
                 {unit?.convert(forecast!.current.temperature)}°
             </div>
