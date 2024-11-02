@@ -80,6 +80,18 @@ router.post(
 
         const user = await User.findOne({ _id: userId });
 
+        try {
+            sendEmail(
+                user.email,
+                'Verification',
+                `${process.env.VERIFY_BASE_URL}account/verify?code=${user.verificationCode}`
+            );
+        } catch (error) {
+            log.error('Something went wrong');
+            res.status(500).end('Internal error');
+            return;
+        }
+
         const token = await createNewToken(
             user.email,
             user.isVerified,
@@ -87,12 +99,6 @@ router.post(
         );
 
         log.info(user);
-
-        sendEmail(
-            user.email,
-            'Verification',
-            `${process.env.VERIFY_BASE_URL}account/verify?code=${user.verificationCode}`
-        );
 
         res.end(token);
     }
